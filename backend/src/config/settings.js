@@ -1,6 +1,6 @@
 import { hashPassword } from '../utils/auth.js'
 
-const LOCAL_CLIENT_ORIGINS = 'http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174'
+const LOCAL_CLIENT_ORIGINS = 'http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174,hindva-furniture.vercel.app'
 
 function requireProductionEnv(name) {
   const value = process.env[name]

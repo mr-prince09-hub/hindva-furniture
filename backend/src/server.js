@@ -29,17 +29,23 @@ export async function startServer() {
   const send = (req, res, status, data) => sendJson(req, res, status, data, settings.clientOrigins)
   const routeApi = createApiRouter({ settings, send })
 
-  const server = http.createServer(async (req, res) => {
-    try {
-      await routeApi(req, res)
-    } catch (error) {
-      console.error('Unhandled route error:', error)
-      // Don't send if headers already sent (e.g. SSE)
-      if (!res.headersSent) {
-        send(req, res, 500, { message: 'Internal server error' })
-      }
+const server = http.createServer(async (req, res) => {
+  if (req.method === 'OPTIONS') {
+    return send(req, res, 204, {})
+  }
+
+  try {
+    await routeApi(req, res)
+  } catch (error) {
+    console.error('Unhandled route error:', error)
+
+    if (!res.headersSent) {
+      send(req, res, 500, {
+        message: 'Internal server error',
+      })
     }
-  })
+  }
+})
 
   server.listen(settings.port, () => {
     console.log(`Hindiva API running on port ${settings.port}`)

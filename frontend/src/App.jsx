@@ -31,7 +31,7 @@ function AppLayout() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Navigate to="/admin/inquiries" replace />} />
             <Route path="inquiries" element={<AdminInquiries />} />
-            <Route path="categories" element={<AdminCategories />} />
+            <Route path="api/categories" element={<AdminCategories />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

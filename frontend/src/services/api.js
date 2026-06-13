@@ -35,12 +35,13 @@ export async function api(path, options = {}) {
     const data = await response.json().catch(() => null)
     if (!response.ok) throw new Error(data?.message || `Request failed (${response.status})`)
     return data
-  } catch (err) {
-    clearTimeout(timeout)
-    if (err.name === 'AbortError') throw new Error('Request timed out. Please try again.')
-    throw err
+  }  catch (err) {
+  clearTimeout(timeout)
+  if (err?.name === 'AbortError') {
+    throw new Error('Request timed out. Please try again.', { cause: err })
   }
-}
+  throw err
+}}
 
 export async function uploadToImageKit(file, categorySlug) {
   const auth = await api('/admin/imagekit/auth', { method: 'POST', body: JSON.stringify({}) })

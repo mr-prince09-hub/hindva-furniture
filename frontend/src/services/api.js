@@ -1,4 +1,7 @@
-export const API_BASE = import.meta.env.VITE_API_URL || 'https://hindva-furniture.onrender.com/api'
+const configuredApiUrl = import.meta.env.VITE_API_URL
+export const API_BASE = configuredApiUrl && !configuredApiUrl.includes('your-render-backend-url')
+  ? configuredApiUrl
+  : 'https://hindva-furniture.onrender.com/api'
 const TOKEN_KEY = 'hindiva_admin_token'
 
 export function getToken() {

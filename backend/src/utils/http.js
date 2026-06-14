@@ -1,10 +1,15 @@
 const MAX_BODY_SIZE = 64 * 1024 // 64 KB
+const VERCEL_PREVIEW_ORIGIN_RE = /^https:\/\/hindi?va-furniture(?:-[a-z0-9-]+)?\.vercel\.app$/i
+
+function isAllowedOrigin(origin, allowedOrigins) {
+  return allowedOrigins.includes(origin) || VERCEL_PREVIEW_ORIGIN_RE.test(origin)
+}
 
 export function getCorsOrigin(req, clientOrigins) {
   const origin = req.headers.origin
-  const allowedOrigins = clientOrigins.split(',').map(o => o.trim())
+  const allowedOrigins = clientOrigins.split(',').map(o => o.trim()).filter(Boolean)
   if (!origin) return allowedOrigins[0]
-  return allowedOrigins.includes(origin) ? origin : ''
+  return isAllowedOrigin(origin, allowedOrigins) ? origin : ''
 }
 
 export function sendJson(req, res, status, data, clientOrigins) {

@@ -1,7 +1,19 @@
-const configuredApiUrl = import.meta.env.VITE_API_URL
-export const API_BASE = configuredApiUrl && !configuredApiUrl.includes('your-render-backend-url')
-  ? configuredApiUrl
-  : 'https://hindva-furniture.onrender.com/api'
+const FALLBACK_API_BASE = 'https://hindva-furniture.onrender.com/api'
+const configuredApiUrl = import.meta.env.VITE_API_URL?.trim()
+
+function resolveApiBase(url) {
+  if (!url) return FALLBACK_API_BASE
+
+  const lowerUrl = url.toLowerCase()
+  const isPlaceholder =
+    lowerUrl.includes('your-render-backend-url') ||
+    lowerUrl.includes('your-api-domain') ||
+    lowerUrl.includes('example.com')
+
+  return isPlaceholder ? FALLBACK_API_BASE : url.replace(/\/+$/, '')
+}
+
+export const API_BASE = resolveApiBase(configuredApiUrl)
 const TOKEN_KEY = 'hindiva_admin_token'
 
 export function getToken() {

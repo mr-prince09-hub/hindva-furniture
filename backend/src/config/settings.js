@@ -1,7 +1,13 @@
 import { hashPassword } from '../utils/auth.js'
 
-const LOCAL_CLIENT_ORIGINS =
-  'http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174,https://hindva-furniture.vercel.app'
+const DEFAULT_CLIENT_ORIGINS = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+  'https://hindva-furniture.vercel.app',
+  'https://hindiva-furniture.vercel.app',
+].join(',')
   
 function requireProductionEnv(name) {
   const value = process.env[name]
@@ -13,12 +19,15 @@ function requireProductionEnv(name) {
 export function getSettings() {
   const isProduction = process.env.NODE_ENV === 'production'
   const adminPassword = process.env.ADMIN_PASSWORD || ''
+  const clientOrigins = process.env.CLIENT_ORIGINS || process.env.CLIENT_ORIGIN || DEFAULT_CLIENT_ORIGINS
 
   if (isProduction) {
     requireProductionEnv('JWT_SECRET')
     requireProductionEnv('ADMIN_EMAIL')
     requireProductionEnv('MONGODB_URI')
-    requireProductionEnv('CLIENT_ORIGIN')
+    if (!process.env.CLIENT_ORIGINS && !process.env.CLIENT_ORIGIN) {
+      throw new Error('CLIENT_ORIGINS or CLIENT_ORIGIN is required when NODE_ENV=production')
+    }
   }
 
   if (!process.env.ADMIN_PASSWORD_HASH && !process.env.ADMIN_PASSWORD) {
@@ -33,7 +42,7 @@ export function getSettings() {
     adminPasswordHash: process.env.ADMIN_PASSWORD_HASH || hashPassword(adminPassword),
     mongodbUri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017',
     mongodbDb: process.env.MONGODB_DB || 'hindiva_furniture',
-    clientOrigins: process.env.CLIENT_ORIGIN || LOCAL_CLIENT_ORIGINS,
+    clientOrigins,
     emailjs: {
       serviceId: process.env.EMAILJS_SERVICE_ID || '',
       templateId: process.env.EMAILJS_TEMPLATE_ID || '',
